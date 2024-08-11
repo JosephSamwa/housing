@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Send Message about {{ property.title }}</h1>
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="message" class="form-label">Message</label>
+        <textarea class="form-control" id="message" name="message" rows="3" required></textarea>
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="is_complaint" name="is_complaint">
+        <label class="form-check-label" for="is_complaint">This is a complaint</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Send Message</button>
+</form>
+{% endblock %}

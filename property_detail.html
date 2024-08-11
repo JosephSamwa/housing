@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ property.title }}</h1>
+<div class="row">
+    <div class="col-md-6">
+        {% if property.cover_image %}
+        <img src="{{ property.cover_image.url }}" alt="{{ property.title }}" class="img-fluid mb-3">
+        {% endif %}
+        <p><strong>Type:</strong> {{ property.get_property_type_display }}</p>
+        <p><strong>Bedrooms:</strong> {{ property.bedrooms }}</p>
+        <p><strong>Bathrooms:</strong> {{ property.bathrooms }}</p>
+        <p><strong>Square Footage:</strong> {{ property.square_footage }}</p>
+        <p><strong>Address:</strong> {{ property.address }}</p>
+        <p><strong>Monthly Rent:</strong> {{ property.monthly_rent }} KES</p>
+        <p><strong>Available From:</strong> {{ property.available_from }}</p>
+    </div>
+    <div class="col-md-6">
+        <h3>Description</h3>
+        <p>{{ property.description }}</p>
+    </div>
+</div>
+
+<div class="mt-4">
+    {% if property.images.exists %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageModal">
+        View Images
+    </button>
+    {% endif %}
+    
+    {% if property.videos.exists %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#videoModal">
+        View Videos
+    </button>
+    {% endif %}
+    
+    <a href="{% url 'send_message' property.id %}" class="btn btn-primary">Send Message</a>
+    <a href="{% url 'simulate_payment' property.id %}" class="btn btn-success">Simulate Payment</a>
+</div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Property Images</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="propertyImageCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for image in property.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ image.image.url }}" class="d-block w-100" alt="Property Image">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#propertyImageCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#propertyImageCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Video Modal -->
+<div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="videoModalLabel">Property Videos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% for video in property.videos.all %}
+                <div class="mb-3">
+                    <video src="{{ video.video.url }}" controls class="w-100"></video>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

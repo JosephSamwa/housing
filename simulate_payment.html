@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Simulate Payment for {{ property.title }}</h1>
+<p>Monthly Rent: {{ property.monthly_rent }} KES</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Simulate Payment</button>
+</form>
+<hr>
+<h2>Make Actual Payment</h2>
+<a href="{% url 'initiate_payment' property.id %}" class="btn btn-success">Pay with M-Pesa</a>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Available Properties - SmartHousing{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Available Properties</h1>
+
+<!-- Search and Filter Form -->
+<form method="get" class="mb-4">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <input type="text" name="search" class="form-control" placeholder="Search by title or address" value="{{ request.GET.search }}">
+        </div>
+        <div class="col-md-2">
+            <select name="property_type" class="form-select">
+                <option value="">All Types</option>
+                {% for type_value, type_label in property_types %}
+                    <option value="{{ type_value }}" {% if request.GET.property_type == type_value %}selected{% endif %}>{{ type_label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="min_bedrooms" class="form-control" placeholder="Min Bedrooms" value="{{ request.GET.min_bedrooms }}">
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="max_rent" class="form-control" placeholder="Max Rent" value="{{ request.GET.max_rent }}">
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a href="{% url 'property_list' %}" class="btn btn-secondary">Clear</a>
+        </div>
+    </div>
+</form>
+
+<!-- Property List -->
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for property in properties %}
+    <div class="col">
+        <div class="card h-100">
+            {% if property.cover_image %}
+            <img src="{{ property.cover_image.url }}" class="card-img-top" alt="{{ property.title }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ property.title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ property.get_property_type_display }}</h6>
+                <p class="card-text">
+                    <strong>Address:</strong> {{ property.address }}<br>
+                    <strong>Bedrooms:</strong> {{ property.bedrooms }}<br>
+                    <strong>Bathrooms:</strong> {{ property.bathrooms }}<br>
+                    <strong>Square Footage:</strong> {{ property.square_footage }} sq ft<br>
+                    <strong>Monthly Rent:</strong> KES {{ property.monthly_rent }}
+                </p>
+                <p class="card-text"><small class="text-muted">Available from: {{ property.available_from }}</small></p>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'property_detail' property.id %}" class="btn btn-primary">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p>No properties match your search criteria.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo; First</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a></li>
+        {% endif %}
+
+        <li class="page-item active"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Last &raquo;</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock %}
